@@ -9,7 +9,10 @@ def process(from_path: str, to_path: str):
     try:
         shutil.copy(from_path, to_path)
     except FileNotFoundError:
-        os.makedirs(to_path)
+        dirs = to_path.split("/")
+        dirs_path = [dir_ for dir_ in dirs if dir_]
+        dirs_path = "/".join(dirs[:-1])
+        os.makedirs(dirs_path)
         shutil.copy(from_path, to_path)
 
 
