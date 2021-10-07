@@ -24,10 +24,10 @@ FILES_MAPPING = {
     # # My path utils
     f"{HOME}/path-utils/lock-screen": f"{REPO_BASE}path-utils/",
     # # Doom emacs
-    f"{HOME}.doom.d/init.el": f"{REPO_BASE}/.doom.d/",
-    f"{HOME}.doom.d/config.el": f"{REPO_BASE}/.doom.d/",
-    f"{HOME}.doom.d/packages.el": f"{REPO_BASE}/.doom.d/",
-    f"{HOME}.doom.d/custom.el": f"{REPO_BASE}/.doom.d/",
+    f"{HOME}.doom.d/init.el": f"{REPO_BASE}.doom.d/init.el",
+    f"{HOME}.doom.d/config.el": f"{REPO_BASE}.doom.d/config.el",
+    f"{HOME}.doom.d/packages.el": f"{REPO_BASE}.doom.d/packages.el",
+    # f"{HOME}.doom.d/custom.el": f"{REPO_BASE}.doom.d/custom.el",
     # Python
     f"{HOME}.pylintrc": f"{REPO_BASE}",
 }
