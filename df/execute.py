@@ -1,7 +1,10 @@
+import logging
 import os
 import shutil
 
 from .paths import FILES
+
+log = logging.getLogger(__name__)
 
 
 # TODO use more sophisticated type than str, Path

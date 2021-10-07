@@ -1,25 +1,30 @@
+import logging
+
 import click
 
+from .config import init_app
 from .execute import execute_copy, execute_paste
+
+log = logging.getLogger(__name__)
 
 
 @click.command()
 def copy():
-    click.echo("Start coping files to repo.")
+    log.info("Copying files from disk to repo.")
     execute_copy()
-    click.echo("Done.")
+    log.info("Done.")
 
 
 @click.command()
 def paste():
-    click.echo("Start coping files from repo to computer.")
+    log.info("Copying files from repo to disk.")
     execute_paste()
-    click.echo("Done.")
+    log.info("Done.")
 
 
 @click.group()
 def cli():
-    pass
+    init_app("df")
 
 
 cli.add_command(copy)
