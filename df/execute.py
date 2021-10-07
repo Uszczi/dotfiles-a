@@ -7,6 +7,7 @@ from .paths import FILES
 # TODO use more sophisticated type than str, Path
 def process(from_path: str, to_path: str):
     try:
+        # TODO add something like for displaying diffs difflib.unified_diff
         shutil.copy(from_path, to_path)
     except FileNotFoundError:
         dirs = to_path.split("/")
