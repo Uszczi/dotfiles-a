@@ -26,7 +26,7 @@ alias emacs="emacsclient -c -a emacs"
 
 #### Some python settings
 set -gx VIRTUAL_ENV_DISABLE_PROMPT false
-set -e _OLD_FISH_PROMPT_OVERRIDE
-set -e _OLD_VIRTUAL_PYTHONHOME
-set -e _OLD_VIRTUAL_PATH
+set -ge _OLD_FISH_PROMPT_OVERRIDE
+set -ge _OLD_VIRTUAL_PYTHONHOME
+set -ge _OLD_VIRTUAL_PATH
 ####
