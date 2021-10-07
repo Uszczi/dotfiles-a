@@ -25,4 +25,6 @@ FILES = {
     f"{HOME}.pylintrc": f"{REPO_BASE}.pylintrc",
     # Alacritty
     f"{HOME}.alacritty.yml": f"{REPO_BASE}.alacritty.yml",
+    # Vim
+    f"{HOME}.vimrc": f"{REPO_BASE}.vimrc",
 }
