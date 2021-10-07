@@ -23,5 +23,6 @@ FILES = {
     # f"{HOME}.doom.d/custom.el": f"{REPO_BASE}doom/custom.el",
     # Python
     f"{HOME}.pylintrc": f"{REPO_BASE}.pylintrc",
-    # TODO alacritty
+    # Alacritty
+    f"{HOME}.alacritty.yml": f"{REPO_BASE}.alacritty.yml",
 }
