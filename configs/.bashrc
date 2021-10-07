@@ -18,3 +18,6 @@ export PATH="/home/mat/path-utils:$PATH"
 
 fish
 
+source /usr/share/nvm/init-nvm.sh
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/simbody/lib/x86_64-linux-gnu
+export SIMBODY_HOME=~/simbody

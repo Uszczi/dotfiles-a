@@ -54,7 +54,6 @@
 ;; they are implemented.
 
 
-
 ;; How to setup font
 ;; (setq doom-font (font-spec :family "DejaVuSansMono" :size 15)
 ;;      doom-variable-pitch-font (font-spec :family "DejaVuSansMono" :size 15)
@@ -64,8 +63,7 @@
 ;;        doom-themes-enable-italic t))
 
 
-
-(setq projectile-project-search-path '("~/RoC/"))
+(setq projectile-project-search-path '("~/RoC/" "~/github/" "~/github/map-app"))
 
 
 (defun efs/lsp-mode-setup ()
@@ -101,6 +99,7 @@
 
 
 
+(require 'prettier-js)
 
 
 
@@ -108,7 +107,7 @@
 
 
 
-
+;; JS, TypeScript
 ;; https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -124,13 +123,17 @@
   (require 'dap-node)
   (dap-node-setup))
 
+(use-package typescript-mode
+  :mode "\\.tsx\\'"
+  :hook ((typescript-mode . lsp-deferred) (typescript-mode . prettier-js-mode))
+  :config
+  (setq typescript-indent-level 2)
+  (require 'dap-node)
+  (dap-node-setup))
+;; (add-to-list 'auto-mode-alist '("\.tsx\'" . typescript-mode))
 
-(require 'lsp-python-ms)
-(setq lsp-python-ms-auto-install-server t)
 
-
-
-
+;; Python
 (use-package lsp-python-ms
   :ensure t
   :init (setq lsp-python-ms-auto-install-server t)
@@ -139,19 +142,31 @@
                           (lsp))))  ; or lsp-deferred
 (use-package lsp-treemacs
   :after lsp)
+
+
+
+
 (use-package evil-nerd-commenter
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 
-(use-package dap-mode)
 
+(use-package dap-mode)
 (require 'dap-python)
-(use-package pyvenv
-  :diminish
-  :config
-  (setq pyvenv-mode-line-indicator
-        '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
-  (pyvenv-mode +1))
+
+;; (use-package pyvenv
+;;   :diminish
+;;   :config
+;;   (setq pyvenv-mode-line-indicator
+;;         '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+;;   (pyvenv-mode +1))
+
+
+
+(setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode)
+;; (display-line-numbers-mode +1)
+
 
 
 (use-package dap-mode
@@ -196,4 +211,41 @@
          (before-save . py-isort-before-save)))
 
 
+(setq-default  lsp-python-ms-extra-paths ["/home/mat/RoC/cat-app/src/cats_app/web_app"])
+(require 'helm-icons)
 
+
+
+
+(add-to-list 'display-buffer-alist '(" server log\\*\\'" display-buffer-no-window))
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+;; enable this if you want `swiper' to use it
+(setq search-default-mode #'char-fold-to-regexp)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "<f6>") 'ivy-resume)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+
+
+(map! :leader "f r" #'counsel-recentf)
+
+(treemacs-follow-mode +1)
+
+
+(add-hook 'pdf-view-mode-hook
+          (lambda () (local-key-binding (kbd "C-o") 'pdf-history-backward)))

@@ -57,3 +57,5 @@
 (package! pyvenv)
 (package! python-black)
 (package! py-isort)
+(package! helm-icons)
+(package! prettier-js)
