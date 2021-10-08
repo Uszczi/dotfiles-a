@@ -50,7 +50,7 @@
 ;(unpin! t)
 
 (package! evil-tutor)
-(package! lsp-python-ms)
+;; (package! lsp-python-ms)
 (package! lsp-treemacs)
 (package! evil-nerd-commenter)
 (package! dap-mode)
@@ -59,3 +59,4 @@
 (package! py-isort)
 (package! helm-icons)
 (package! prettier-js)
+(package! lsp-pyright)

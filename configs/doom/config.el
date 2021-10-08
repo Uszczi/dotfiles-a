@@ -1,39 +1,12 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
 
+(setq user-full-name "Mateusz Papuga"
+      user-mail-address "mateuszpapuga24@gmail.com")
 
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets.
-(setq user-full-name "John Doe"
-      user-mail-address "john@doe.com")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
-;; are the three important ones:
-;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-one)
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type "relative")
 
 
 ;; Here are some additional functions/macros that could help you configure Doom:
@@ -53,38 +26,52 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+;; General
+(add-to-list 'display-buffer-alist '(" server log\\*\\'" display-buffer-no-window))
 
-;; How to setup font
-;; (setq doom-font (font-spec :family "DejaVuSansMono" :size 15)
-;;      doom-variable-pitch-font (font-spec :family "DejaVuSansMono" :size 15)
-;;      doom-big-font (font-spec :family "DejaVuSansM;;ono" :size 24))
-;; (after! doom-them;;es
-;;  (setq doom-themes-enable-bold t
-;;        doom-themes-enable-italic t))
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+;; Uncoment that some day, dont know why but stop working.
+;; (treemacs-follow-mode +1)
+
+(add-hook 'pdf-view-mode-hook
+          (lambda () (local-key-binding (kbd "C-o") 'pdf-history-backward)))
 
 
+;; Projectile
 (setq projectile-project-search-path '("~/RoC/" "~/github/" "~/github/map-app"))
 
 
+;; LSP
 (defun efs/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . efs/lsp-mode-setup)
-  :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-  :config
-  ;; (lsp-register-custom-settings
-  ;;  '(("pyls.plugins.pyls_mypy.enabled" t t)
-  ;;    ("pyls.plugins.pyls_mypy.live_mode" nil t)
-  ;;    ("pyls.plugins.pyls_black.enabled" t t)
-  ;;    ("pyls.plugins.pyls_isort.enabled" t t)))
-  (lsp-enable-which-key-integration t))
+(with-eval-after-load 'lsp-mode
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
 
-(use-package lsp-ui)
+;; TODO check if that do something
+;; (use-package lsp-ui)
 
+(use-package lsp-treemacs
+  :after lsp)
+
+
+;; Python
+;; Dont know why but stop working and so far lsp-pyright works better.
+;; (use-package lsp-python-ms
+;;   :ensure t
+;;   :init (setq lsp-python-ms-auto-install-server t)
+;;   :hook (python-mode . (lambda ()
+;;                           (require 'lsp-python-ms)
+;;                           (lsp))))  ; or lsp-deferred
+
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 
 (use-package! python-black
   :demand t
@@ -97,18 +84,54 @@
   (map! :leader :desc "Blacken Statement" "m b s" #'python-black-statement)
 )
 
+(use-package dap-mode)
+(require 'dap-python)
 
+(use-package dap-mode
+  :custom
+  (dap-auto-configure-features '(session locals tooltip))
+ (setq lsp-enable-dap-auto-configure nil)
+  :config
+  (dap-ui-mode 1)
+  (general-define-key
+    :keymaps 'lsp-mode-map
+    :prefix lsp-keymap-prefix
+    "d" '(dap-hydra t :wk "debugger"))
+  )
 
+(map!  :leader
+        "d" #'dap-hydra)
+
+;; (use-package pyvenv
+;;   :diminish
+;;   :config
+;;   (setq pyvenv-mode-line-indicator
+;;         '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+;;   (pyvenv-mode +1))
+
+(use-package python
+ :delight "π "
+ :bind (("M-[" . python-indent-shift-left)
+        ("M-]" . python-indent-shift-right))
+ )
+
+(defun python-remove-unused-imports()
+  "Removes unused imports and unused variables with autoflake."
+  (interactive)
+  (if (executable-find "autoflake")
+      (progn
+        (shell-command (format "autoflake --remove-all-unused-imports -i %s"
+                               (shell-quote-argument (buffer-file-name))))
+        (revert-buffer t t t))
+    (warn "python-mode: Cannot find autoflake executable.")))
+
+(use-package py-isort
+  :after python
+  :hook ((python-mode . pyvenv-mode)
+         (before-save . py-isort-before-save)))
+
+;; TypeScript
 (require 'prettier-js)
-
-
-
-
-
-
-
-;; JS, TypeScript
-;; https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
@@ -130,57 +153,9 @@
   (setq typescript-indent-level 2)
   (require 'dap-node)
   (dap-node-setup))
-;; (add-to-list 'auto-mode-alist '("\.tsx\'" . typescript-mode))
 
 
-;; Python
-(use-package lsp-python-ms
-  :ensure t
-  :init (setq lsp-python-ms-auto-install-server t)
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-python-ms)
-                          (lsp))))  ; or lsp-deferred
-(use-package lsp-treemacs
-  :after lsp)
-
-
-
-
-(use-package evil-nerd-commenter
-  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
-
-
-
-(use-package dap-mode)
-(require 'dap-python)
-
-;; (use-package pyvenv
-;;   :diminish
-;;   :config
-;;   (setq pyvenv-mode-line-indicator
-;;         '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
-;;   (pyvenv-mode +1))
-
-
-
-(setq display-line-numbers-type 'relative)
-(global-display-line-numbers-mode)
-;; (display-line-numbers-mode +1)
-
-
-
-(use-package dap-mode
-  :custom
-  (dap-auto-configure-features '(session locals tooltip))
-  ;; (setq lsp-enable-dap-auto-configure nil)
-  :config
-  (dap-ui-mode 1)
-  (general-define-key
-    :keymaps 'lsp-mode-map
-    :prefix lsp-keymap-prefix
-    "d" '(dap-hydra t :wk "debugger"))
-  )
-
+;; Evil snipe
 (evil-snipe-mode +1)
 (evil-snipe-override-mode +1)
 (setq evil-snipe-scope 'whole-buffer)
@@ -188,36 +163,9 @@
 (setq evil-snipe-tab-increment t)
 
 
-
-(use-package python
-  :delight "π "
-  :bind (("M-[" . python-nav-backward-block)
-         ("M-]" . python-nav-forward-block))
-  :preface
-  (defun python-remove-unused-imports()
-    "Removes unused imports and unused variables with autoflake."
-    (interactive)
-    (if (executable-find "autoflake")
-        (progn
-          (shell-command (format "autoflake --remove-all-unused-imports -i %s"
-                                 (shell-quote-argument (buffer-file-name))))
-          (revert-buffer t t t))
-      (warn "python-mode: Cannot find autoflake executable."))))
+;; Ivy
 
 
-(use-package py-isort
-  :after python
-  :hook ((python-mode . pyvenv-mode)
-         (before-save . py-isort-before-save)))
-
-
-(setq-default  lsp-python-ms-extra-paths ["/home/mat/RoC/cat-app/src/cats_app/web_app"])
-(require 'helm-icons)
-
-
-
-
-(add-to-list 'display-buffer-alist '(" server log\\*\\'" display-buffer-no-window))
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
@@ -241,11 +189,4 @@
 (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
 (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 
-
 (map! :leader "f r" #'counsel-recentf)
-
-(treemacs-follow-mode +1)
-
-
-(add-hook 'pdf-view-mode-hook
-          (lambda () (local-key-binding (kbd "C-o") 'pdf-history-backward)))
