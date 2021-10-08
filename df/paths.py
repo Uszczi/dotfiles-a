@@ -20,7 +20,7 @@ FILES = {
     f"{HOME}.doom.d/init.el": f"{REPO_BASE}doom/init.el",
     f"{HOME}.doom.d/config.el": f"{REPO_BASE}doom/config.el",
     f"{HOME}.doom.d/packages.el": f"{REPO_BASE}doom/packages.el",
-    # f"{HOME}.doom.d/custom.el": f"{REPO_BASE}doom/custom.el",
+    f"{HOME}.doom.d/custom.el": f"{REPO_BASE}doom/custom.el",
     # Python
     f"{HOME}.pylintrc": f"{REPO_BASE}.pylintrc",
     # Alacritty
