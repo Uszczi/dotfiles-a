@@ -9,6 +9,12 @@
 (setq display-line-numbers-type "relative")
 
 
+(map! "C-;" nil)
+
+(setq enable-local-variables :all)
+(setq enable-local-eval t)
+
+
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
@@ -25,12 +31,14 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+(setq doom-font (font-spec :family "Cascadia Mono PL" :slant 'normal :weight 'normal :size 13))
+
 
 ;; General
 (add-to-list 'display-buffer-alist '(" server log\\*\\'" display-buffer-no-window))
 
 (use-package evil-nerd-commenter
-  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+  :bind ("C-/" . evilnc-comment-or-uncomment-lines))
 
 ;; Uncoment that some day, dont know why but stop working.
 ;; (treemacs-follow-mode +1)
@@ -40,7 +48,7 @@
 
 
 ;; Projectile
-(setq projectile-project-search-path '("~/RoC/" "~/github/" "~/github/map-app"))
+(setq projectile-project-search-path '("~/RoC/" "~/github/" "~/github/map-app" "~/decernis"))
 
 
 ;; LSP
@@ -51,21 +59,15 @@
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
 
-;; TODO check if that do something
-;; (use-package lsp-ui)
 
 (use-package lsp-treemacs
   :after lsp)
 
 
-;; Python
-;; Dont know why but stop working and so far lsp-pyright works better.
-;; (use-package lsp-python-ms
-;;   :ensure t
-;;   :init (setq lsp-python-ms-auto-install-server t)
-;;   :hook (python-mode . (lambda ()
-;;                           (require 'lsp-python-ms)
-;;                           (lsp))))  ; or lsp-deferred
+(use-package lsp-mode
+  :init
+  (setq lsp-keymap-prefix "C-c l"))
+
 
 (use-package lsp-pyright
   :ensure t
@@ -85,22 +87,67 @@
 )
 
 (use-package dap-mode)
-(require 'dap-python)
+(use-package dap-python
+  :config
+           (setq dap-python-debugger "debugpy")
 
-(use-package dap-mode
+  
+
   :custom
   (dap-auto-configure-features '(session locals tooltip))
- (setq lsp-enable-dap-auto-configure nil)
-  :config
+ (setq lsp-enable-dap-auto-configure 't)
+ :config
   (dap-ui-mode 1)
   (general-define-key
-    :keymaps 'lsp-mode-map
+   :keymaps 'lsp-mode-map
     :prefix lsp-keymap-prefix
     "d" '(dap-hydra t :wk "debugger"))
   )
 
-(map!  :leader
-        "d" #'dap-hydra)
+
+(require 'evil-multiedit)
+;; Highlights all matches of the selection in the buffer.
+(define-key evil-visual-state-map "R" 'evil-multiedit-match-all)
+
+;; Match the word under cursor (i.e. make it an edit region). Consecutive presses will
+;; incrementally add the next unmatched match.
+(define-key evil-normal-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+;; Match selected region.
+(define-key evil-visual-state-map (kbd "M-d") 'evil-multiedit-match-and-next)
+;; Insert marker at point
+(define-key evil-insert-state-map (kbd "M-d") 'evil-multiedit-toggle-marker-here)
+
+;; Same as M-d but in reverse.
+(define-key evil-normal-state-map (kbd "M-D") 'evil-multiedit-match-and-prev)
+(define-key evil-visual-state-map (kbd "M-D") 'evil-multiedit-match-and-prev)
+
+;; OPTIONAL: If you prefer to grab symbols rather than words, use
+;; `evil-multiedit-match-symbol-and-next` (or prev).
+
+;; Restore the last group of multiedit regions.
+(define-key evil-visual-state-map (kbd "C-M-D") 'evil-multiedit-restore)
+
+;; RET will toggle the region under the cursor
+(define-key evil-multiedit-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+
+;; ...and in visual mode, RET will disable all fields outside the selected region
+(define-key evil-motion-state-map (kbd "RET") 'evil-multiedit-toggle-or-restrict-region)
+
+;; For moving between edit regions
+(define-key evil-multiedit-state-map (kbd "C-n") 'evil-multiedit-next)
+(define-key evil-multiedit-state-map (kbd "C-p") 'evil-multiedit-prev)
+(define-key evil-multiedit-insert-state-map (kbd "C-n") 'evil-multiedit-next)
+(define-key evil-multiedit-insert-state-map (kbd "C-p") 'evil-multiedit-prev)
+
+;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
+(evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
+
+
+
+
+
+;; (map! :n  :leader
+        ;; "d" #'dap-hydra)
 
 ;; (use-package pyvenv
 ;;   :diminish
@@ -161,6 +208,8 @@
 (setq evil-snipe-scope 'whole-buffer)
 (setq evil-snipe-auto-scroll t)
 (setq evil-snipe-tab-increment t)
+
+
 
 
 ;; Ivy

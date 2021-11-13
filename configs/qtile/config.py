@@ -14,6 +14,7 @@ default_browser = "google-chrome-stable"
 
 keys = [
     #### Basic
+    Key([mod, "shift"], "b", lazy.hide_show_bar("top"), desc="Toggle menu bar."),
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
@@ -36,7 +37,8 @@ keys = [
     Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
     #### Apps
-    Key([mod], "b", lazy.spawn(default_browser), desc="Google chrome"),
+    Key([mod], "b", lazy.spawn(default_browser), desc="Run default browser"),
+    Key([mod], "i", lazy.spawn("guake"), desc="Toggle Guake"),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
     #    Key([mod], "r", lazy.spawncmd()desc="Spawn a command using a prompt widget",
     Key(
@@ -46,7 +48,7 @@ keys = [
         desc="Spawn a command using a prompt widget",
     ),
     Key(
-        ["control", "shift"],
+        [mod, "shift"],
         "e",
         lazy.spawn("emacsclient -c -a emacs"),
         desc="Doom Emacs",
@@ -96,6 +98,8 @@ keys = [
     #### Monitors
     Key([mod], "comma", lazy.prev_screen(), desc="Move focus to prev monitor"),
     Key([mod], "period", lazy.next_screen(), desc="Move focus to next monitor"),
+    #### Various apss
+    Key([mod, "shift"], "s", lazy.spawn("flameshot gui"), desc="Spawn FlameShot Gui"),
 ]
 
 
@@ -158,10 +162,10 @@ layout_theme = {
 }
 
 layouts = [
-    layout.MonadTall(**layout_theme),
-    layout.Max(**layout_theme),
-    layout.RatioTile(**layout_theme),
-    layout.Floating(**layout_theme),
+    layout.MonadTall(**layout_theme),  # type: ignore
+    layout.Max(**layout_theme),  # type: ignore
+    layout.RatioTile(**layout_theme),  # type: ignore
+    layout.Floating(**layout_theme),  # type: ignore
 ]
 
 widget_defaults = dict(
@@ -174,13 +178,13 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayout(fmt=str_formater_with_const_width()),
-                widget.GroupBox(),
-                widget.WindowName(),
+                widget.CurrentLayout(fmt=str_formater_with_const_width()),  # type: ignore
+                widget.GroupBox(),  # type: ignore
+                widget.WindowName(),  # type: ignore
                 # widget.Prompt(),
-                widget.Clock(format="%Y-%m-%d %a %H:%M"),
-                widget.Battery(),
-                widget.QuickExit(),
+                widget.Clock(format="%Y-%m-%d %a %H:%M"),  # type: ignore
+                widget.Battery(),  # type: ignore
+                widget.QuickExit(),  # type: ignore
             ],
             24,
         ),
@@ -188,13 +192,13 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayout(fmt=str_formater_with_const_width()),
-                widget.GroupBox(),
-                widget.WindowName(),
-                widget.Systray(),
-                widget.Clock(format="%Y-%m-%d %a %H:%M"),
-                widget.Battery(),
-                widget.QuickExit(),
+                widget.CurrentLayout(fmt=str_formater_with_const_width()),  # type: ignore
+                widget.GroupBox(),  # type: ignore
+                widget.WindowName(),  # type: ignore
+                widget.Systray(),  # type: ignore
+                widget.Clock(format="%Y-%m-%d %a %H:%M"),  # type: ignore
+                widget.Battery(),  # type: ignore
+                widget.QuickExit(),  # type: ignore
             ],
             24,
         ),
@@ -220,16 +224,17 @@ dgroups_app_rules = []  # type: List
 follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
-floating_layout = layout.Floating(
+floating_layout = layout.Floating(  # type: ignore
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
-        *layout.Floating.default_float_rules,
+        *layout.Floating.default_float_rules,  # type: ignore
         Match(wm_class="confirmreset"),  # gitk
         Match(wm_class="makebranch"),  # gitk
         Match(wm_class="maketag"),  # gitk
         Match(wm_class="ssh-askpass"),  # ssh-askpass
         Match(title="branchdialog"),  # gitk
         Match(title="pinentry"),  # GPG key password entry
+        Match(wm_class="guake"),
     ]
 )
 auto_fullscreen = True
@@ -240,14 +245,7 @@ reconfigure_screens = True
 # focus, should we respect this or not?
 auto_minimize = True
 
-# XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
-# string besides java UI toolkits; you can see several discussions on the
-# mailing lists, GitHub issues, and other WM documentation that suggest setting
-# this string if your java app doesn't work correctly. We may as well just lie
-# and say that we're a working one by default.
-#
-# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
-# java that happens to be on java's whitelist.
+# Just from default config file.
 wmname = "LG3D"
 
 

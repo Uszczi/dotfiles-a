@@ -60,3 +60,4 @@
 (package! helm-icons)
 (package! prettier-js)
 (package! lsp-pyright)
+(package! evil-multiedit)

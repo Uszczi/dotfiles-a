@@ -45,7 +45,7 @@ maim_file_prefix="maim"
 confedit_editor="$DMEDITOR"
 declare -A confedit_list
 confedit_list[confedit]="$HOME/.config/dmscripts/config"
-confedit_list[alacritty]="$HOME/.config/alacritty/alacritty.yml"
+confedit_list[alacritty]="$HOME/.alacritty.yml"
 confedit_list[awesome]="$HOME/.config/awesome/rc.lua"
 confedit_list[bash]="$HOME/.bashrc"
 confedit_list[broot]="$HOME/.config/broot/conf.toml"
